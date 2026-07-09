@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verificar index.html
         run: |
-          test -f index.html && echo "OK index.html existe"
+          test -f index.html && echo "OK index.html existe"    
 
   deploy:
     name: Desplegar a S3 (production)
