@@ -1,0 +1,37 @@
+name: Deploy Staging
+
+on:
+  pull_request:
+    branches: [ develop ]
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    name: Validar el sitio
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verificar index.html
+        run: |
+          test -f index.html && echo "OK index.html existe"
+
+  deploy:
+    name: Desplegar a S3 (staging)
+    needs: build
+    if: github.event_name != 'pull_request'   # en el PR solo valida; despliega al hacer merge
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configurar credenciales AWS (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Subir a S3
+        run: aws s3 sync . s3://${{ secrets.S3_BUCKET }} --exclude ".git/*" --exclude ".github/*"
