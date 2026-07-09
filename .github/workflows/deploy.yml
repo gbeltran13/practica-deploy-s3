@@ -33,7 +33,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}    # vacío por ahora -> aquí fallará
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
 
       - name: Subir el sitio a S3
         run: aws s3 sync . s3://${{ secrets.S3_BUCKET }} --exclude ".git/*" --exclude ".github/*"
